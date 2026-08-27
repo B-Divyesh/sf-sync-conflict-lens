@@ -1,0 +1,10 @@
+{
+  "name": "Sync Conflict Lens",
+  "short_name": "Conflict Lens",
+  "description": "Private causal conflict analysis for two-device operation logs.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f1ead7",
+  "theme_color": "#f1ead7",
+  "icons": [{"src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable"}]
+}
