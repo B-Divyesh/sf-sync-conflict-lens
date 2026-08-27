@@ -1,0 +1,68 @@
+{
+  "name": "sync-conflict-lens",
+  "version": "0.1.0",
+  "description": "Vendor-neutral causal conflict analysis and scrubbed bug bundles for local-first operation logs.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Sociobot (Param Factory)",
+  "homepage": "https://sync-conflict-lens.sociobot.in",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/B-Divyesh/sf-sync-conflict-lens.git"
+  },
+  "keywords": [
+    "local-first",
+    "sync",
+    "conflict",
+    "debugging",
+    "operation-log"
+  ],
+  "files": [
+    "dist/index.js",
+    "dist/index.cjs",
+    "dist/index.d.ts",
+    "dist/index.d.cts",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "overrides": {
+    "esbuild": "0.28.2"
+  },
+  "scripts": {
+    "dev": "vite --config site/vite.config.ts",
+    "clean": "node scripts/clean.mjs",
+    "build:lib": "tsup src/index.ts --format esm,cjs --dts --target es2022 --clean false",
+    "build:site": "node scripts/build-site.mjs",
+    "build": "npm run clean && npm run build:lib && npm run build:site",
+    "test": "vitest run && tsc --noEmit",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "preview": "vite preview --config site/vite.config.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.0",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vite": "^8.2.2",
+    "vitest": "^4.1.11"
+  }
+}
