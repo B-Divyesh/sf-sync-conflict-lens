@@ -1,0 +1,11 @@
+{
+  "slug": "sync-conflict-lens",
+  "title": "Sync Conflict Lens",
+  "territory": "devtools-data",
+  "user": "Local-first application developers who need to reproduce, inspect, and explain sync conflicts from real device logs without exposing user data to a hosted debugger.",
+  "smallest_useful_product": "A library plus local viewer that accepts a simple operation-log format, replays two replicas, highlights causal order and conflicting fields, and exports a scrubbed bug bundle.",
+  "success_measure": "A developer can turn a supplied two-device log into a reproducible conflict timeline in under five minutes.",
+  "artifact_class": "library-npm",
+  "monetization": "freemium — open log format/viewer; paid support and adapters for teams.",
+  "constraints": "Logs can contain PII; redaction rules and offline operation are mandatory; avoid claiming correctness for arbitrary sync semantics."
+}
