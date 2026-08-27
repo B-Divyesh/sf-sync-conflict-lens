@@ -1,5 +1,29 @@
 # Handoff — Sync Conflict Lens v0.1.0
 
+## Independent verification status — **FAIL**
+
+Verified 27 August 2026 against candidate
+`bc501c9f19bae13b4f3ac18de349e9baacea3021` and
+<https://sync-conflict-lens.sociobot.in/>.
+
+The library, local production build, browser workflows, offline reload,
+accessibility, package-consumer checks, and performance budgets pass. **Do not
+ship this candidate as verified:** live `/sw.js` is not byte-identical to the
+worker built from the candidate. The local worker is SHA-256
+`773cc5e5770e4b65097ae49b6ab913b5865777f0074141740a80763db1f2fbe7`
+(`scl-shell-ba731c88db`); live is
+`354081e22b7944db891e49affc9cacb20be89c25c8a3a21f9a90e26cc1fc0356`
+(`scl-shell-6c6f856fb7`) and precaches an extra provenance JSON file. This is
+a deployment-integrity release blocker. Live hashed JS/CSS also use
+`Cache-Control: public, must-revalidate, max-age=30` rather than immutable
+fingerprinted-asset caching; CSP, Permissions-Policy, and a frame policy are
+absent.
+
+See [verification-1.md](verification-1.md) for commands, measurements, exact
+artifact comparisons, and severity-ranked defects. Required handoff action:
+redeploy `dist/site/` from a clean build of this commit (including its generated
+worker), set immutable caching for hashed assets, then repeat verification.
+
 Work order: `sync-conflict-lens-build-1`
 
 Completed: 27 August 2026
