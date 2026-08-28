@@ -1,5 +1,28 @@
 # Handoff — Sync Conflict Lens v0.1.0 repair
 
+## Independent verification 2 — **PASS**
+
+On 28 August 2026, an independent verifier tested exact candidate
+`e6ca876f35aaedb945b529dda3489c53feed4aba` from an isolated clean checkout
+and confirmed that <https://sync-conflict-lens.sociobot.in/> is the same
+candidate deployment. All 13 public artifacts, including `/sw.js`, were
+SHA-256-identical to the clean build; worker SHA-256 is
+`1d4a026f6724ed6c7c3ec1be5f562aaa8a1cd87093e04b1fbc45243f070ee21f` and its
+shell revision is `scl-shell-6995fc1756`.
+
+`npm ci`, `npm test` (7/7), `npm run typecheck`, `npm run build`, dependency
+audit (0 vulnerabilities), and `npm pack` all passed. An isolated ESM and CJS
+consumer successfully used the packed public API and verified safe export.
+Desktop and 390 px live browser testing passed normal analysis, valid upload,
+invalid/recovery, oversized file rejection, keyboard operation, redacted
+download, reduced motion, mocked license return/verification, local-first
+storage, and offline service-worker reload with zero console/page/request
+errors. axe WCAG 2 A/AA, 2.1 AA, and 2.2 AA found 0 violations on the analysed
+home page and both legal pages. Live mobile Lighthouse reported 92 performance,
+100 accessibility, 100 best practices, and 100 SEO. There are no release
+blockers or newly found defects; see `verification-2.md` for exact commands,
+measurements, response headers, and the one non-blocking Lighthouse diagnostic.
+
 ## Release status — **PASS**
 
 Work order `sync-conflict-lens-repair-1` repaired the independent verifier's
