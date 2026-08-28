@@ -1,32 +1,63 @@
-# Handoff — Sync Conflict Lens v0.1.0
+# Handoff — Sync Conflict Lens v0.1.0 repair
 
-## Independent verification status — **FAIL**
+## Release status — **PASS**
 
-Verified 27 August 2026 against candidate
-`bc501c9f19bae13b4f3ac18de349e9baacea3021` and
-<https://sync-conflict-lens.sociobot.in/>.
+Work order `sync-conflict-lens-repair-1` repaired the independent verifier's
+deployment blockers from `verification-1.md`. Source repairs are in
+`5d8d6397dcdef844909c1e2865d57e6765fb77e9` and
+`a6e93aee308a8b99296c59b56ad060d4397bc2f1`; the exact clean site output was
+deployed to <https://sync-conflict-lens.sociobot.in/> with Azure Static Web
+Apps deployment `ed745fa5-c36f-4768-ba5d-87129ff6df14`.
 
-The library, local production build, browser workflows, offline reload,
-accessibility, package-consumer checks, and performance budgets pass. **Do not
-ship this candidate as verified:** live `/sw.js` is not byte-identical to the
-worker built from the candidate. The local worker is SHA-256
-`773cc5e5770e4b65097ae49b6ab913b5865777f0074141740a80763db1f2fbe7`
-(`scl-shell-ba731c88db`); live is
-`354081e22b7944db891e49affc9cacb20be89c25c8a3a21f9a90e26cc1fc0356`
-(`scl-shell-6c6f856fb7`) and precaches an extra provenance JSON file. This is
-a deployment-integrity release blocker. Live hashed JS/CSS also use
-`Cache-Control: public, must-revalidate, max-age=30` rather than immutable
-fingerprinted-asset caching; CSP, Permissions-Policy, and a frame policy are
-absent.
+### Repairs
 
-See [verification-1.md](verification-1.md) for commands, measurements, exact
-artifact comparisons, and severity-ranked defects. Required handoff action:
-redeploy `dist/site/` from a clean build of this commit (including its generated
-worker), set immutable caching for hashed assets, then repeat verification.
+- `build:site` now removes `dist/site` before Vite runs, so its standalone
+  deployment command cannot inherit old hashed assets or workers.
+- Provenance is copied before the service-worker manifest is calculated. The
+  worker cache revision fingerprints sorted paths **and file bytes**, and its
+  precache list includes `instrument-hero.provenance.json`.
+- `staticwebapp.config.json` is source-controlled and deployed with explicit
+  immutable caching for `/assets/*`, non-cacheable `sw.js`, CSP,
+  Permissions-Policy, `X-Frame-Options: DENY`, nosniff, and referrer policy.
+  It is intentionally excluded from the service-worker shell because Azure
+  consumes it at deploy time and returns 404 for that control file.
+- `npm test` now includes a deploy-artifact regression: it seeds a stale file,
+  builds the site, and asserts stale-file removal, exact precache membership,
+  byte-based worker revisioning, and the required static-host headers.
+- The esbuild security pin is an explicit dev dependency with a matching
+  override, keeping `npm ci` and `npm audit` valid under the current npm.
 
-Work order: `sync-conflict-lens-build-1`
+### Final verification evidence
 
-Completed: 27 August 2026
+- Clean `npm ci`: 149 packages installed; audit reported 0 vulnerabilities.
+  `npm audit --audit-level=high`: 0 vulnerabilities.
+- `npm test`: Vitest 7/7, strict `tsc --noEmit`, and the deterministic
+  site-build regression passed. `npm run typecheck` and `npm run build` passed.
+  The build produced ESM, CJS, `.d.ts`, `.d.cts`, and `dist/site/`.
+- `npm pack --json`: 8 files, 8,827 B tarball / 43,516 B unpacked. An isolated
+  consumer installed that tarball and both ESM and CommonJS replayed 4 steps,
+  found 2 conflicts, and exported 7 masks with neither sample secret present.
+- Live identity: all 12 worker-shell URLs plus `/sw.js` (13 artifacts total)
+  were SHA-256-identical to `dist/site`. Final `/sw.js` SHA-256 is
+  `1d4a026f6724ed6c7c3ec1be5f562aaa8a1cd87093e04b1fbc45243f070ee21f`
+  with revision `scl-shell-6995fc1756`.
+- Live response policy: root uses `public, max-age=0, must-revalidate`; hashed
+  assets use `public, max-age=31536000, immutable`; `sw.js` uses
+  `no-cache, no-store, must-revalidate`. The live CSP permits only the site and
+  the two documented Sociobot billing origins, has `frame-ancestors 'none'`,
+  and the live Permissions-Policy and `X-Frame-Options: DENY` are present.
+- Live browser verification at desktop and 390×844: no console/page errors;
+  sample analysis gave 4 rows/2 conflicts; Arrow Down updated selection;
+  exported bundle had 7 redactions and no email/session; a fresh worker
+  controlled the page and offline reload passed; mobile scroll and client
+  widths were both 390 px. Axe WCAG 2 A/AA, 2.1 AA, and 2.2 AA found 0
+  violations on home (after analysis), `/privacy/`, and `/terms/`.
+- `/opt/fleet/lib/verify-url.sh` against the live root passed: 775 ms load,
+  title, `lang`, one `<h1>`, main, image alt text, and labelled buttons all
+  present; no errors.
+
+There are no release-blocking gaps. The listed format and diagnostic-model
+limits below remain intentional product constraints.
 
 ## What was built
 
