@@ -20,7 +20,9 @@ async function files(directory, prefix = '') {
   const entries = await readdir(directory, { withFileTypes: true });
   const result = [];
   for (const entry of entries.sort((left, right) => left.name.localeCompare(right.name))) {
-    if (entry.name === 'sw.js') continue;
+    // Azure consumes this file while deploying and intentionally does not
+    // expose it as a public URL, so it cannot be part of cache.addAll().
+    if (entry.name === 'sw.js' || entry.name === 'staticwebapp.config.json') continue;
     const relative = `${prefix}${entry.name}`;
     if (entry.isDirectory()) result.push(...await files(new URL(`${entry.name}/`, directory), `${relative}/`));
     else result.push(`/${relative}`);

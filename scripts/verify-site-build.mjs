@@ -12,7 +12,7 @@ async function shellFiles(directory, prefix = '') {
   const entries = await readdir(directory, { withFileTypes: true });
   const result = [];
   for (const entry of entries.sort((left, right) => left.name.localeCompare(right.name))) {
-    if (entry.name === 'sw.js') continue;
+    if (entry.name === 'sw.js' || entry.name === 'staticwebapp.config.json') continue;
     const relative = `${prefix}${entry.name}`;
     if (entry.isDirectory()) result.push(...await shellFiles(new URL(`${entry.name}/`, directory), `${relative}/`));
     else result.push(`/${relative}`);
@@ -28,6 +28,7 @@ assert(config.globalHeaders?.['X-Frame-Options'] === 'DENY', 'X-Frame-Options mu
 
 const shell = await shellFiles(out);
 assert(shell.includes('/instrument-hero.provenance.json'), 'provenance must be precached by the worker');
+assert(!shell.includes('/staticwebapp.config.json'), 'deployment-only configuration must not be precached');
 const worker = await readFile(new URL('sw.js', out), 'utf8');
 const listed = JSON.parse(worker.match(/^const SHELL = (.+);$/m)?.[1] ?? 'null');
 assert(Array.isArray(listed) && JSON.stringify(listed) === JSON.stringify(shell), 'worker precache list must match the clean deploy directory');
